@@ -17,8 +17,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static javafx.application.Application.launch;
-
 
 public class Main extends Application {
 

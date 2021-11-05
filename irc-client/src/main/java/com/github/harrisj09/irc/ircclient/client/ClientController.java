@@ -15,11 +15,14 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ClientController {
+    private static final Logger logger = Logger.getLogger(ClientController.class.getName());
     private ClientModel clientModel;
-    private Channel currentChannel;
     private DataRetrieveHandler dataRetrieveHandler;
+    private Channel currentChannel;
 
     public ClientController(ClientModel clientModel, DataRetrieveHandler dataRetrieveHandler) {
         this.clientModel = clientModel;
@@ -47,16 +50,17 @@ public class ClientController {
     }
 
     public void sendMessage(String channelName, String message) throws URISyntaxException {
-
+        message = removeSpaces(message);
         HttpRequest build = HttpRequest.newBuilder().GET().uri(
                 new URI("http://" + clientModel.getIp() + ":" + clientModel.getPort() + "/channels/" + channelName + "/" + clientModel.getUsername() + "/" + message)).build();
         HttpResponse<String> send;
         try {
             send = HttpClient.newBuilder().build().send(build, HttpResponse.BodyHandlers.ofString());
             if (send.statusCode() == 200) {
+                logger.log(Level.INFO, "MESSAGE SENT");
             }
             if (send.statusCode() == 409) {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Username already taken");
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Message Unable to send");
                 alert.show();
             }
             // Add if statement for CONFLICT HttpStatus
@@ -65,10 +69,9 @@ public class ClientController {
         }
     }
 
+    // TODO: Add rest of characters
     public String removeSpaces(String message) {
-        while (message.indexOf(" ") != -1) {
-
-        }
-        return message;
+        // https://secure.n-able.com/webhelp/nc_9-1-0_so_en/content/sa_docs/api_level_integration/api_integration_urlencoding.html
+        return message.trim().replace(" ", "%20").trim().replace(",", "%2C").trim().replace("?", "%3F");
     }
 }

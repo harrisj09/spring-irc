@@ -6,5 +6,5 @@ module irc.client {
     requires java.logging;
     opens com.github.harrisj09.irc.ircclient;
     //opens com.github.harrisj09.irc.ircclient.data;
-    //exports com.github.harrisj09.irc.client.data.DTO;
+    exports com.github.harrisj09.irc.ircclient.data.dtos;
 }
